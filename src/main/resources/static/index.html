@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container mt-3">
+
+        <div class="row mt-5 full-size">
+            <div class="col" >
+                <form method="GET" action="/weather" class="d-flex justify-content-center">
+                    <div class="input-group input-group-lg">
+                        <input type="text" name="city" class="form-control"
+                            placeholder="City name" required>
+                        <button type="submit" class="btn btn-warning">Go</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+    
+</body>
+</html>
