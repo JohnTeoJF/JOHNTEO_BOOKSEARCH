@@ -1,4 +1,4 @@
-package ibf2021.ssf.weather.day18;
+package ssf.bookSearch;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,14 +9,14 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import static ibf2021.ssf.weather.day18.Constants.*;
+import static ssf.bookSearch.Constants.*;
 
 import java.util.logging.Logger;
 
 @Configuration
 public class AppConfig {
 
-    private final Logger logger = Logger.getLogger(Day18Application.class.getName());
+    private final Logger logger = Logger.getLogger(BookSearchApplication.class.getName());
 
     @Value("${spring.redis.host}")
     private String redisHost;
@@ -33,7 +33,7 @@ public class AppConfig {
         redisPassword = System.getenv(ENV_REDIS_PASSWORD);
     }
 
-    @Bean(BEAN_WEATHER_CACHE)
+    @Bean(BEAN_BOOK_CACHE)
     public RedisTemplate<String, String> redisTemplateFactory() {
 
         final RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();

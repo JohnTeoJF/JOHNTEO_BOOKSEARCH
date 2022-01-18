@@ -1,4 +1,4 @@
-package ibf2021.ssf.weather.day18.services;
+package ssf.bookSearch.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ibf2021.ssf.weather.day18.Day18Application;
-import ibf2021.ssf.weather.day18.models.Weather;
-import ibf2021.ssf.weather.day18.repositories.WeatherRepository;
+import ssf.bookSearch.BookSearchApplication;
+import ssf.bookSearch.models.Book;
+import ssf.bookSearch.repositories.BookRepository;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -22,31 +22,31 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 
 @Service
-public class WeatherCacheService {
+public class BookCacheService {
 
-    private final Logger logger = Logger.getLogger(Day18Application.class.getName());
+    private final Logger logger = Logger.getLogger(BookSearchApplication.class.getName());
 
     @Autowired
-    private WeatherRepository weatherRepo;
+    private BookRepository bookRepo;
 
-    public void save(String cityName, List<Weather> weather) {
+    public void save(String bookName, List<Book> book) {
         JsonArrayBuilder arrBuilder = Json.createArrayBuilder();
-        weather.stream()   
+        book.stream()   
             .forEach(v -> arrBuilder.add(v.toJson()));
-        weatherRepo.save(cityName, arrBuilder.build().toString());
+        bookRepo.save(bookName, arrBuilder.build().toString());
     }
 
-    public Optional<List<Weather>> get(String cityName) {
-        Optional<String> opt = weatherRepo.get(cityName);
+    public Optional<List<Book>> get(String bookName) {
+        Optional<String> opt = bookRepo.get(bookName);
         if (opt.isEmpty())
             return Optional.empty();
 
         JsonArray jsonArray = parseJsonArray(opt.get());
-        List<Weather> weather = jsonArray.stream()
+        List<Book> book = jsonArray.stream()
             .map(v -> (JsonObject)v)
-            .map(Weather::create)
+            .map(Book::create)
             .collect(Collectors.toList());
-        return Optional.of(weather);
+        return Optional.of(book);
     }
 
     private JsonArray parseJsonArray(String s) {
