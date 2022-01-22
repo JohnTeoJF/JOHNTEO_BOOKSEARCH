@@ -1,58 +1,87 @@
 package ssf.bookSearch.models;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.springframework.data.redis.serializer.GenericToStringSerializer;
 
 public class Book {
 
-    private String BookName;
-    private String works_id;
-    
-    public String getKey() { return works_id; }
-    public void setKey(String works_id) { this.works_id = works_id; }
+    private String key;
+	private String title;
+	private String description = "";
+	private String excerpt = "";
+	private Boolean cached = false;
 
 
-    public String getBookName() { return this.BookName; }
-    public void setBookName(String BookName) { this.BookName = BookName; }
+	public String getKey() { return key; }
+	public void setKey(String key) { this.key = key; }
 
-    public static Book create(JsonObject o) {
-        final Book w = new Book();
-        w.setKey(o.getString("key"));
-        w.setBookName(o.getString("title"));
+	public String getTitle() { return title; }
+	public void setTitle(String title) { this.title = title; }
 
-        return w;
-    }
+	public String getDescription() { return description; }
+	public void setDescription(String description) { this.description = description; }
 
+	public String getExcerpt() { return excerpt; }
+	public void setExcerpt(String excerpt) { this.excerpt = excerpt; }
 
-// Misc methods
+	public Boolean getCached() { return cached; }
+	public void setCached(Boolean cached) { this.cached = cached; }
 
-    public static Book create(String jsonString) {
-        try (InputStream is = new ByteArrayInputStream(jsonString.getBytes())) {
-            final JsonReader reader = Json.createReader(is);
-            return create(reader.readObject());
-        } catch (Exception ex) { }
+    public static  Book toBook(String json) throws IOException {
+		try (InputStream is = new ByteArrayInputStream(json.getBytes("UTF-8"))) {
+			JsonReader reader = Json.createReader(is);
+			JsonObject o = reader.readObject();
+			Book b = new Book();
+            
+            b.setKey(o.getString("key").replace("/works/", ""));
+			b.setTitle(o.getString("title"));
 
-        // Need to handle error
-        return new Book();
-    }
+            //Try for edge case where description is located in a different location
+            try{
+			    b.setDescription(o.getJsonObject("description").getString("value"));
+            }catch (Exception e){
+                b.setDescription(o.getString("description",""));
+            }
+
+            //Check for edge case where excerpt is located in a different location
+            if((o.get("excerpts") != null) && (o.get("excerpts").toString().length() >=0 )){
+                b.setExcerpt(
+                    o.getJsonArray("excerpts").getJsonObject(0).getString("excerpt"));
+
+            }else if((o.get("excerpt") != null) && (o.get("excerpt").toString().length() >=0 ) ){
+                b.setExcerpt(
+                    o.getString("excerpt"));
+            }
+
+			return b;
+		}
+	}
+
 
     @Override
-    public String toString() {
-        return "key: %s ,title: %s"
-                .formatted(BookName, works_id);
-    }
+	public String toString() {
+		return toJson().toString();
+	}
+    
+	public JsonObject toJson() {
+		final JsonObjectBuilder objBuilder = Json.createObjectBuilder()
+			.add("key", key)
+			.add("title", title)
+			.add("description", description)
+			.add("excerpt", excerpt);
 
-    public JsonObject toJson() {
-        return Json.createObjectBuilder()
-        .add("key", works_id)
-        .add("title", BookName)
-            .build();
-    }
-    
-    
+		return objBuilder.build();
+	}
+
 }

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-th-text="${title}"></title>
-    <link rel="stylesheet" href="bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
@@ -14,27 +14,30 @@
 
         <div class="row">
             <div class="col d-flex justify-content-center mt-5">
-                <h1>Search results  for <code data-th-text="${title}"></code></h1>
+                <h1>Search results for <br><code data-th-text="${title}"></code></h1>
             </div>
         </div>
+        
+        <h2 data-th-if="${error != null}">
+			Search Error <span data-th-text=${error}></span>
+		</h2>
 
         <div class="row" data-th-if="${#lists.isEmpty(bookList)}">
             <div class="col">
-                <h2>No book details found</h2>
+                <h3>No Book found</h3>
             </div>
         </div>
 
-        <div class="row" data-th-each="w : ${bookList}" data-th-if="${!#lists.isEmpty(bookList)}">
-   
-            <div class="col-8">
+        <div class="row" data-th-each="item : ${bookList}" data-th-if="${!#lists.isEmpty(bookList)}">
+            <div>
                 <table class="table table-hover">
                     <tr>
-                        <td>Book Name</td>
                         <td>
-                            <strong data-th-text="${w.title}"></strong>
+                            <a data-th-href="@{'/book/' + ${item.key}}">
+                                <span data-th-text="${item.title}"></span>
+                            </a>
                         </td>
                     </tr>
-              
                 </table>
             </div>
 
@@ -42,7 +45,7 @@
 
         <div class="row">
             <div class="col d-flex justify-content-end">
-                <a href="/" class="btn btn-primary btn-lg">Back</a>
+                <a data-th-href="@{/}" class="btn btn-primary btn-lg">Back</a>
             </div>
         </div>
 
