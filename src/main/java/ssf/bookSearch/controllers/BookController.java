@@ -26,7 +26,7 @@ public class BookController {
 	@Autowired
 	private BookRepository bookRepo;
 
-	private final Logger logger = Logger.getLogger(SearchController.class.getName());
+	private final Logger logger = Logger.getLogger(BookController.class.getName());
 
 	
 	@GetMapping (path = "/book/{key}")

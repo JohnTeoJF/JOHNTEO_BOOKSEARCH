@@ -9,22 +9,23 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static ssf.bookSearch.Constants.*;
 
-import org.springframework.data.redis.serializer.GenericToStringSerializer;
 
 public class Book {
 
     private String key;
+	private String coverURL = "/default_cover.png";
 	private String title;
 	private String description = "";
 	private String excerpt = "";
 	private Boolean cached = false;
 
-
 	public String getKey() { return key; }
 	public void setKey(String key) { this.key = key; }
+
+	public String getCoverURL() { return coverURL; }
+	public void setCoverURL(String coverURL) { this.coverURL = coverURL; }
 
 	public String getTitle() { return title; }
 	public void setTitle(String title) { this.title = title; }
@@ -46,6 +47,14 @@ public class Book {
             
             b.setKey(o.getString("key").replace("/works/", ""));
 			b.setTitle(o.getString("title"));
+
+			//Try for edge case of cover located in a different location
+			if(o.get("covers") != null){
+				b.setCoverURL(URL_COVER_IMAGE.formatted(o.getJsonArray("covers").getInt(0)));
+			}else if(o.get("cover") != null){
+				b.setCoverURL(o.getString("cover"));
+			}
+
 
             //Try for edge case where description is located in a different location
             try{
@@ -77,6 +86,7 @@ public class Book {
 	public JsonObject toJson() {
 		final JsonObjectBuilder objBuilder = Json.createObjectBuilder()
 			.add("key", key)
+			.add("coverURL", coverURL)
 			.add("title", title)
 			.add("description", description)
 			.add("excerpt", excerpt);
